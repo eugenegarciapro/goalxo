@@ -10,7 +10,7 @@
 /*
   GoalXO overlay for TikTok Live Studio (link source), transparent background.
   A thin band: shows 15 s (logos pop in, each game is lit in turn), hides 30 s, loops.
-  URL options (built by editor.html): ?lang=fr|en|es ?show=15 ?hide=30 ?theme=light ?style=compact|logos ?size=s|m ?pos=top|bottom ?cta=0 ?preview
+  URL options (built by editor.html): ?lang=fr|en|es ?show=15 ?hide=30 ?theme=light ?style=compact|logos ?cta=0 ?preview
   The band is drawn at 1080 px wide and scales to the source's width.
 */
 :root { color-scheme: light; --brand: #c8ff3d; --ink: #0b0f05; --band: rgba(9, 12, 16, .86); --text: #f2f4f6; --muted: #9aa3ae; }
@@ -169,8 +169,6 @@ const MODES = ['band', 'compact', 'logos', 'flash', 'ticker', 'punch']
 const STYLE = MODES.includes(q.get('style')) ? q.get('style') : 'band'
 cls.add('s-' + STYLE)
 if (q.get('cta') === '0') cls.add('nocta')
-const SIZE = { s: .6, m: .8, l: 1 }[q.get('size')] || 1
-const POS = q.get('pos') || 'center'
 const SIZES = { band: [1080, 150], compact: [820, 120], logos: [760, 120], flash: [860, 150], ticker: [1080, 130], punch: [1000, 150] }
 
 const tile = (i, extra = '') => {
@@ -184,13 +182,12 @@ const tile = (i, extra = '') => {
 }
 const name = (i) => T.names[GAMES[i][0]]
 
-// The band keeps its drawing size and scales to the width of the source (times the chosen size), centred across,
-// at the top, middle or bottom of the source.
+// The band fills its source: it keeps its proportions and grows to the full height (or width), centred.
 const fit = () => {
   const [w, h] = SIZES[STYLE]
-  const s = innerWidth / 1080 * SIZE
+  const s = Math.min(innerWidth / w, innerHeight / h)
   const x = (innerWidth - w * s) / 2
-  const y = POS === 'top' ? 0 : POS === 'bottom' ? innerHeight - h * s : (innerHeight - h * s) / 2
+  const y = (innerHeight - h * s) / 2
   stage.style.transform = `translate(${x}px, ${y}px) scale(${s})`
   stage.style.top = '0'
 }

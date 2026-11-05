@@ -40,18 +40,26 @@ input[type=range] { width: 100%; accent-color: var(--brand); }
 .switch { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 600; }
 .switch input { width: 40px; height: 22px; accent-color: var(--brand); }
 
-.preview { padding: 14px; }
-.ph { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-.ph .seg { flex: none; }
-.ph .seg button { padding: 6px 12px; font-size: 12.5px; }
-.screen { position: relative; margin: 0 auto; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 16 / 9; width: 100%; }
-.screen.portrait { aspect-ratio: 9 / 16; width: min(100%, 380px); }
-.screen iframe { z-index: 1; position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
-.bg-check { background: repeating-conic-gradient(#3a3f47 0 25%, #2a2e35 0 50%) 0 0 / 24px 24px; }
-.bg-black { background: #000; } .bg-white { background: #fff; }
-.bg-game { background: radial-gradient(120% 80% at 70% 20%, #2b7a3d, #0d3a1c 60%, #06140a); }
-.bg-game::before { content: ''; position: absolute; inset: 8% 10%; border: 2px solid rgba(255,255,255,.25); border-radius: 4px; }
-.bg-game::after { content: ''; position: absolute; left: 50%; top: 50%; width: 18%; aspect-ratio: 1; transform: translate(-50%,-50%); border: 2px solid rgba(255,255,255,.25); border-radius: 50%; }
+.grid { align-items: stretch; }
+.preview { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.ph { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ph span { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.ph .btn { min-height: 34px; padding: 0 14px; }
+/* A portrait live: webcam on top, the overlay right under it, a Top 10 game below. */
+.screen { flex: 1; min-height: 0; aspect-ratio: 9 / 16; align-self: center; height: 100%; max-width: 100%; display: flex; flex-direction: column;
+  border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #05070a; container-type: inline-size; }
+.cam { position: relative; flex: 0 0 38%; background: radial-gradient(80% 90% at 50% 30%, #4a3a52, #1c1822 70%); overflow: hidden; }
+.cam svg { position: absolute; left: 50%; bottom: 0; width: 62%; transform: translateX(-50%); }
+.cam .live { position: absolute; top: 4cqw; left: 4cqw; padding: .6cqw 2cqw; border-radius: 1.4cqw; background: #fe2c55; color: #fff; font: 800 3.2cqw/1.3 Inter, sans-serif; }
+.ovl { flex: none; position: relative; width: 100%; background: repeating-linear-gradient(45deg, rgba(200,255,61,.05) 0 6px, transparent 6px 12px); outline: 1px dashed rgba(200,255,61,.55); outline-offset: -1px; }
+.ovl iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
+.game { flex: 1; min-height: 0; padding: 4cqw 5cqw; background: linear-gradient(#0d1116, #07090d); display: flex; flex-direction: column; gap: 1.6cqw; overflow: hidden; }
+.game h3 { margin: 0 0 1cqw; font: 400 7cqw/1 'Bebas Neue', sans-serif; letter-spacing: .02em; color: #b07cff; }
+.game h3 small { display: block; font: 600 3cqw/1.3 Inter, sans-serif; color: var(--muted); }
+.row { display: flex; align-items: center; gap: 2.4cqw; padding: 1.5cqw 2.4cqw; border-radius: 2cqw; background: rgba(255,255,255,.05); font: 700 3.4cqw/1.2 Inter, sans-serif; }
+.row i { font-style: normal; width: 5cqw; color: var(--muted); }
+.row.ok { background: rgba(176,124,255,.18); }
+.row.ok b { color: #fff; } .row b { color: transparent; text-shadow: 0 0 6px rgba(255,255,255,.35); }
 
 .link { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
 .link input { flex: 1; min-width: 240px; background: #0b0e12; border: 1px solid var(--line); color: var(--text); border-radius: 14px; padding: 14px 16px; font: 600 13px ui-monospace, Consolas, monospace; }
@@ -61,6 +69,10 @@ input[type=range] { width: 100%; accent-color: var(--brand); }
 .btn:active { transform: scale(.97); }
 .tip { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
 .tip b { color: var(--text); }
+.size { margin-top: 18px; padding: 14px 16px; border-radius: 14px; border: 1px dashed rgba(200,255,61,.45); background: rgba(200,255,61,.05); }
+.size .lbl { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.size strong { display: block; margin-top: 4px; font: 400 34px/1 'Bebas Neue', sans-serif; letter-spacing: .03em; color: var(--brand); }
+.size p { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
 </style>
 </head>
 <body>
@@ -83,10 +95,6 @@ input[type=range] { width: 100%; accent-color: var(--brand); }
       </div>
       <div class="field"><div class="lbl">Fond du bandeau</div>
         <div class="seg" data-k="theme"><button data-v="dark">Noir</button><button data-v="light">Blanc</button></div></div>
-      <div class="field"><div class="lbl">Taille</div>
-        <div class="seg" data-k="size"><button data-v="s">Petit</button><button data-v="m">Moyen</button><button data-v="l">Grand</button></div></div>
-      <div class="field"><div class="lbl">Position</div>
-        <div class="seg" data-k="pos"><button data-v="top">Haut</button><button data-v="center">Milieu</button><button data-v="bottom">Bas</button></div></div>
       <div class="field"><div class="lbl">Langue</div>
         <div class="seg" data-k="lang"><button data-v="fr">FR</button><button data-v="en">EN</button><button data-v="es">ES</button></div></div>
       <div class="field"><label for="show">Affiché pendant <span class="val" id="show-v"></span></label>
@@ -94,16 +102,36 @@ input[type=range] { width: 100%; accent-color: var(--brand); }
       <div class="field"><label for="hide">Caché pendant <span class="val" id="hide-v"></span></label>
         <input type="range" id="hide" min="5" max="180" step="5"></div>
       <div class="field"><label class="switch">Afficher « goalxo.fun » <input type="checkbox" id="cta"></label></div>
+      <div class="size">
+        <div class="lbl">Taille de la source</div>
+        <strong id="dims"></strong>
+        <p>Donne cette taille à la source « Lien » (ou garde ce rapport), puis place-la où tu veux : sous ta webcam, c'est parfait.</p>
+      </div>
     </div>
 
     <div class="panel preview">
-      <div class="ph">
-        <div class="seg" id="orient"><button data-v="land" class="on">Paysage</button><button data-v="portrait">Portrait</button></div>
-        <div class="seg" id="bg"><button data-v="game" class="on">Jeu</button><button data-v="check">Damier</button><button data-v="black">Noir</button><button data-v="white">Blanc</button></div>
-        <button class="btn ghost" id="replay" style="min-height:34px;padding:0 14px">↻ Rejouer</button>
+      <div class="ph"><span>Aperçu du live</span><button class="btn ghost" id="replay">↻ Rejouer</button></div>
+      <div class="screen">
+        <div class="cam">
+          <span class="live">LIVE</span>
+          <svg viewBox="0 0 200 170" aria-hidden="true"><circle cx="100" cy="62" r="40" fill="#7d6a86"/><path d="M20 170c4-46 38-72 80-72s76 26 80 72z" fill="#5e4f66"/></svg>
+        </div>
+        <div class="ovl" id="ovl"><iframe id="frame" title="Aperçu" allowtransparency="true"></iframe></div>
+        <div class="game">
+          <h3>Top 10<small>Les meilleurs buteurs de l'histoire de la Ligue des champions</small></h3>
+          <div class="row ok"><i>1</i><b>Cristiano Ronaldo</b></div>
+          <div class="row ok"><i>2</i><b>Lionel Messi</b></div>
+          <div class="row"><i>3</i><b>••••••••••</b></div>
+          <div class="row ok"><i>4</i><b>Robert Lewandowski</b></div>
+          <div class="row"><i>5</i><b>••••••••</b></div>
+          <div class="row"><i>6</i><b>•••••••••</b></div>
+          <div class="row ok"><i>7</i><b>Karim Benzema</b></div>
+          <div class="row"><i>8</i><b>•••••••</b></div>
+          <div class="row"><i>9</i><b>••••••••••</b></div>
+          <div class="row"><i>10</i><b>••••••</b></div>
+        </div>
       </div>
-      <div class="screen bg-game" id="screen"><iframe id="frame" title="Aperçu" allowtransparency="true"></iframe></div>
-      <p class="tip">L'aperçu revient au bout de 2 s pour que tu voies l'animation ; le lien copié garde ta vraie pause.</p>
+      <p class="tip" style="margin:0;text-align:center">L'aperçu revient au bout de 2 s pour que tu voies l'animation ; le lien copié garde ta vraie pause.</p>
     </div>
   </div>
 
@@ -112,32 +140,40 @@ input[type=range] { width: 100%; accent-color: var(--brand); }
     <button class="btn primary" id="copy">Copier le lien</button>
     <a class="btn ghost" id="open" target="_blank" rel="noopener">Ouvrir</a>
   </div>
-  <p class="tip">Dans TikTok Live Studio : <b>Ajouter une source › Lien</b>, colle le lien, puis étire la source sur <b>toute la scène</b> (1920×1080 ou 1080×1920). La position Haut / Milieu / Bas place le bandeau dedans, entre ta webcam et le jeu.</p>
+  <p class="tip">Dans TikTok Live Studio : <b>Ajouter une source › Lien</b>, colle le lien, donne-lui la taille indiquée, puis glisse-la entre ta webcam et le jeu.</p>
 </div>
 <script>
-const DEF = { style: 'band', theme: 'dark', size: 'l', pos: 'center', lang: 'fr', show: 15, hide: 30, cta: '1' }
+const DEF = { style: 'band', theme: 'dark', lang: 'fr', show: 15, hide: 30, cta: '1' }
+// Each style's drawing size (same as the overlay): the source should have this ratio.
+const SIZES = { band: [1080, 150], compact: [820, 120], logos: [760, 120], flash: [860, 150], ticker: [1080, 130], punch: [1000, 150] }
 let st = { ...DEF }
 try { Object.assign(st, JSON.parse(localStorage.getItem('goalxo-overlay') || '{}')) } catch {}
+for (const k of Object.keys(st)) if (!(k in DEF)) delete st[k]
+if (!SIZES[st.style]) st.style = DEF.style
 const base = new URL('./', location.href).href
 const $ = (id) => document.getElementById(id)
 
 const link = (preview) => {
   const p = new URLSearchParams()
   for (const k of Object.keys(DEF)) if (String(st[k]) !== String(DEF[k])) p.set(k, st[k])
-  if (preview) { p.set('hide', 2) }
+  if (preview) p.set('hide', 2)
   const s = p.toString()
-  return base + (s ? '?' + s : '')
+  return (preview ? base + 'index.html' : base) + (s ? '?' + s : '')
 }
 let timer
-const render = (reload = true) => {
+const reload = () => { $('frame').src = link(true) + '#' + Date.now() }
+const render = (again = true) => {
   document.querySelectorAll('[data-k]').forEach((g) => g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === st[g.dataset.k])))
   $('show').value = st.show; $('show-v').textContent = st.show + ' s'
   $('hide').value = st.hide; $('hide-v').textContent = st.hide + ' s'
   $('cta').checked = st.cta === '1'
   $('cta').closest('.field').style.opacity = ['band', 'flash'].includes(st.style) ? 1 : .4
+  const [w, h] = SIZES[st.style]
+  $('dims').textContent = `${w} × ${h} px`
+  $('ovl').style.aspectRatio = `${w} / ${h}`
   $('url').value = link(false); $('open').href = link(false)
   try { localStorage.setItem('goalxo-overlay', JSON.stringify(st)) } catch {}
-  if (reload) { clearTimeout(timer); timer = setTimeout(() => { $('frame').src = link(true).replace(base, base + 'index.html') }, 150) }
+  if (again) { clearTimeout(timer); timer = setTimeout(reload, 150) }
 }
 document.querySelectorAll('[data-k]').forEach((g) => g.addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return
@@ -147,13 +183,7 @@ $('show').addEventListener('input', (e) => { st.show = +e.target.value; render(f
 $('show').addEventListener('change', () => render())
 $('hide').addEventListener('input', (e) => { st.hide = +e.target.value; render(false) })
 $('cta').addEventListener('change', (e) => { st.cta = e.target.checked ? '1' : '0'; render() })
-$('replay').addEventListener('click', () => { $('frame').src = link(true).replace(base, base + 'index.html') + '#' + Date.now() })
-const pick = (id, f) => $(id).addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return
-  $(id).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); f(b.dataset.v)
-})
-pick('orient', (v) => { $('screen').classList.toggle('portrait', v === 'portrait'); $('frame').src = link(true).replace(base, base + 'index.html') + '#' + Date.now() })
-pick('bg', (v) => { $('screen').className = `screen bg-${v}${$('screen').classList.contains('portrait') ? ' portrait' : ''}` })
+$('replay').addEventListener('click', reload)
 $('copy').addEventListener('click', async () => {
   const b = $('copy')
   try { await navigator.clipboard.writeText($('url').value) } catch { $('url').select(); document.execCommand('copy') }
