@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoalXO · Éditeur d'overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap">
+<style>
+/* Overlay editor: settings on the left, a live preview of the scene on the right, the link to copy below. */
+:root { color-scheme: light; --bg: #07090d; --card: #0f1318; --line: rgba(255,255,255,.09); --text: #f2f4f6; --muted: #8d96a3; --brand: #c8ff3d; --ink: #0b0f05; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 32px 20px 48px; }
+h1 { margin: 0; font: 400 52px/0.95 'Bebas Neue', sans-serif; letter-spacing: .02em; }
+h1 span { color: var(--brand); }
+.lead { margin: 8px 0 26px; color: var(--muted); max-width: 64ch; }
+.grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px; }
+.field + .field { margin-top: 18px; }
+.field > label, .field > .lbl { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.field .val { color: var(--brand); }
+.seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+.seg button { flex: 1; border: 0; background: none; color: var(--text); font: inherit; font-weight: 600; padding: 9px 6px; border-radius: 10px; cursor: pointer; }
+.seg button:hover { background: rgba(255,255,255,.06); }
+.seg button.on { background: var(--brand); color: var(--ink); font-weight: 800; }
+.styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.styles button { border: 1px solid var(--line); background: rgba(255,255,255,.03); color: var(--text); border-radius: 14px; padding: 10px 6px 8px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.styles button.on { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset; }
+.styles i { display: flex; align-items: center; gap: 3px; height: 22px; padding: 0 6px; border-radius: 7px; }
+.styles i b { width: 9px; height: 9px; border-radius: 3px; background: var(--brand); }
+.styles i b:nth-child(2) { background: #4d8dff; } .styles i b:nth-child(3) { background: #b07cff; } .styles i b:nth-child(4) { background: #ec4899; }
+.styles i s { width: 22px; height: 6px; border-radius: 2px; background: #fff; margin-right: 3px; }
+.styles .st-band i, .styles .st-compact i { background: #1b2027; border: 1px solid rgba(200,255,61,.35); }
+input[type=range] { width: 100%; accent-color: var(--brand); }
+.switch { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 600; }
+.switch input { width: 40px; height: 22px; accent-color: var(--brand); }
+
+.preview { padding: 14px; }
+.ph { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.ph .seg { flex: none; }
+.ph .seg button { padding: 6px 12px; font-size: 12.5px; }
+.screen { position: relative; margin: 0 auto; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 16 / 9; width: 100%; }
+.screen.portrait { aspect-ratio: 9 / 16; width: min(100%, 380px); }
+.screen iframe { z-index: 1; position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
+.bg-check { background: repeating-conic-gradient(#3a3f47 0 25%, #2a2e35 0 50%) 0 0 / 24px 24px; }
+.bg-black { background: #000; } .bg-white { background: #fff; }
+.bg-game { background: radial-gradient(120% 80% at 70% 20%, #2b7a3d, #0d3a1c 60%, #06140a); }
+.bg-game::before { content: ''; position: absolute; inset: 8% 10%; border: 2px solid rgba(255,255,255,.25); border-radius: 4px; }
+.bg-game::after { content: ''; position: absolute; left: 50%; top: 50%; width: 18%; aspect-ratio: 1; transform: translate(-50%,-50%); border: 2px solid rgba(255,255,255,.25); border-radius: 50%; }
+
+.link { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+.link input { flex: 1; min-width: 240px; background: #0b0e12; border: 1px solid var(--line); color: var(--text); border-radius: 14px; padding: 14px 16px; font: 600 13px ui-monospace, Consolas, monospace; }
+.btn { border: 0; border-radius: 14px; padding: 0 22px; min-height: 48px; font: inherit; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.btn.primary { background: var(--brand); color: var(--ink); }
+.btn.ghost { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid var(--line); }
+.btn:active { transform: scale(.97); }
+.tip { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
+.tip b { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Overlay <span>GoalXO</span></h1>
+  <p class="lead">Règle ton bandeau, regarde l'aperçu, puis copie le lien et colle-le dans TikTok Live Studio (source « Lien »).</p>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="field">
+        <div class="lbl">Style</div>
+        <div class="styles" data-k="style">
+          <button data-v="band" class="st-band"><i><s></s><b></b><b></b><b></b><b></b></i>Bandeau</button>
+          <button data-v="compact" class="st-compact"><i><b></b><b></b><b></b><b></b></i>Compact</button>
+          <button data-v="logos" class="st-logos"><i><b></b><b></b><b></b><b></b></i>Logos seuls</button>
+        </div>
+      </div>
+      <div class="field"><div class="lbl">Fond du bandeau</div>
+        <div class="seg" data-k="theme"><button data-v="dark">Noir</button><button data-v="light">Blanc</button></div></div>
+      <div class="field"><div class="lbl">Taille</div>
+        <div class="seg" data-k="size"><button data-v="s">Petit</button><button data-v="m">Moyen</button><button data-v="l">Grand</button></div></div>
+      <div class="field"><div class="lbl">Position</div>
+        <div class="seg" data-k="pos"><button data-v="top">Haut</button><button data-v="center">Milieu</button><button data-v="bottom">Bas</button></div></div>
+      <div class="field"><div class="lbl">Langue</div>
+        <div class="seg" data-k="lang"><button data-v="fr">FR</button><button data-v="en">EN</button><button data-v="es">ES</button></div></div>
+      <div class="field"><label for="show">Affiché pendant <span class="val" id="show-v"></span></label>
+        <input type="range" id="show" min="8" max="40" step="1"></div>
+      <div class="field"><label for="hide">Caché pendant <span class="val" id="hide-v"></span></label>
+        <input type="range" id="hide" min="5" max="180" step="5"></div>
+      <div class="field"><label class="switch">Afficher « goalxo.fun » <input type="checkbox" id="cta"></label></div>
+    </div>
+
+    <div class="panel preview">
+      <div class="ph">
+        <div class="seg" id="orient"><button data-v="land" class="on">Paysage</button><button data-v="portrait">Portrait</button></div>
+        <div class="seg" id="bg"><button data-v="game" class="on">Jeu</button><button data-v="check">Damier</button><button data-v="black">Noir</button><button data-v="white">Blanc</button></div>
+        <button class="btn ghost" id="replay" style="min-height:34px;padding:0 14px">↻ Rejouer</button>
+      </div>
+      <div class="screen bg-game" id="screen"><iframe id="frame" title="Aperçu" allowtransparency="true"></iframe></div>
+      <p class="tip">L'aperçu revient au bout de 2 s pour que tu voies l'animation ; le lien copié garde ta vraie pause.</p>
+    </div>
+  </div>
+
+  <div class="link">
+    <input id="url" readonly aria-label="Lien de l'overlay">
+    <button class="btn primary" id="copy">Copier le lien</button>
+    <a class="btn ghost" id="open" target="_blank" rel="noopener">Ouvrir</a>
+  </div>
+  <p class="tip">Dans TikTok Live Studio : <b>Ajouter une source › Lien</b>, colle le lien, puis étire la source sur <b>toute la scène</b> (1920×1080 ou 1080×1920). La position Haut / Milieu / Bas place le bandeau dedans, entre ta webcam et le jeu.</p>
+</div>
+<script>
+const DEF = { style: 'band', theme: 'dark', size: 'l', pos: 'center', lang: 'fr', show: 15, hide: 30, cta: '1' }
+let st = { ...DEF }
+try { Object.assign(st, JSON.parse(localStorage.getItem('goalxo-overlay') || '{}')) } catch {}
+const base = new URL('./', location.href).href
+const $ = (id) => document.getElementById(id)
+
+const link = (preview) => {
+  const p = new URLSearchParams()
+  for (const k of Object.keys(DEF)) if (String(st[k]) !== String(DEF[k])) p.set(k, st[k])
+  if (preview) { p.set('hide', 2) }
+  const s = p.toString()
+  return base + (s ? '?' + s : '')
+}
+let timer
+const render = (reload = true) => {
+  document.querySelectorAll('[data-k]').forEach((g) => g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === st[g.dataset.k])))
+  $('show').value = st.show; $('show-v').textContent = st.show + ' s'
+  $('hide').value = st.hide; $('hide-v').textContent = st.hide + ' s'
+  $('cta').checked = st.cta === '1'
+  $('cta').closest('.field').style.opacity = st.style === 'band' ? 1 : .4
+  $('url').value = link(false); $('open').href = link(false)
+  try { localStorage.setItem('goalxo-overlay', JSON.stringify(st)) } catch {}
+  if (reload) { clearTimeout(timer); timer = setTimeout(() => { $('frame').src = link(true).replace(base, base + 'index.html') }, 150) }
+}
+document.querySelectorAll('[data-k]').forEach((g) => g.addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return
+  st[g.dataset.k] = b.dataset.v; render()
+}))
+$('show').addEventListener('input', (e) => { st.show = +e.target.value; render(false) })
+$('show').addEventListener('change', () => render())
+$('hide').addEventListener('input', (e) => { st.hide = +e.target.value; render(false) })
+$('cta').addEventListener('change', (e) => { st.cta = e.target.checked ? '1' : '0'; render() })
+$('replay').addEventListener('click', () => { $('frame').src = link(true).replace(base, base + 'index.html') + '#' + Date.now() })
+const pick = (id, f) => $(id).addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return
+  $(id).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); f(b.dataset.v)
+})
+pick('orient', (v) => { $('screen').classList.toggle('portrait', v === 'portrait'); $('frame').src = link(true).replace(base, base + 'index.html') + '#' + Date.now() })
+pick('bg', (v) => { $('screen').className = `screen bg-${v}${$('screen').classList.contains('portrait') ? ' portrait' : ''}` })
+$('copy').addEventListener('click', async () => {
+  const b = $('copy')
+  try { await navigator.clipboard.writeText($('url').value) } catch { $('url').select(); document.execCommand('copy') }
+  b.textContent = '✓ Copié'; setTimeout(() => { b.textContent = 'Copier le lien' }, 1600)
+})
+render()
+</script>
+</body>
+</html>

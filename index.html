@@ -10,10 +10,10 @@
 /*
   GoalXO overlay for TikTok Live Studio (link source), transparent background.
   A thin band: shows 15 s (logos pop in, each game is lit in turn), hides 30 s, loops.
-  URL options: ?lang=fr|en|es  ?show=15  ?hide=30  ?preview (checkerboard to test)
+  URL options (built by editor.html): ?lang=fr|en|es ?show=15 ?hide=30 ?theme=light ?style=compact|logos ?size=s|m ?pos=top|bottom ?cta=0 ?preview
   The band is drawn at 1080 px wide and scales to the source's width.
 */
-:root { --brand: #c8ff3d; --ink: #0b0f05; --band: rgba(9, 12, 16, .86); --text: #f2f4f6; --muted: #9aa3ae; }
+:root { color-scheme: light; --brand: #c8ff3d; --ink: #0b0f05; --band: rgba(9, 12, 16, .86); --text: #f2f4f6; --muted: #9aa3ae; }
 html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
 body.preview { background: repeating-conic-gradient(#3a3f47 0 25%, #2a2e35 0 50%) 0 0 / 32px 32px; }
 .stage { position: fixed; left: 0; top: 50%; width: 1080px; height: 150px; transform-origin: 0 0; }
@@ -56,6 +56,28 @@ body.preview { background: repeating-conic-gradient(#3a3f47 0 25%, #2a2e35 0 50%
 .on .game.shown { transform: none; opacity: .55; filter: saturate(.75); }
 .on .game.shown.lit { transform: translateY(-3px) scale(1.12); opacity: 1; filter: none; box-shadow: 0 0 0 3px var(--band), 0 0 0 5px var(--c), 0 8px 26px -4px var(--c); }
 .game.gone { transform: translateY(-30px) scale(.5) !important; opacity: 0 !important; transition-duration: .35s; }
+
+/* Light theme: white band, dark text. */
+.light { --band: rgba(255, 255, 255, .94); --text: #0b0f05; --muted: #5d6570; }
+.light .band { border-color: rgba(11, 15, 5, .12); box-shadow: 0 10px 34px rgba(0, 0, 0, .18); }
+.light .mark span, .light .cta em { color: #5a8f00; }
+.light .band::after { background: linear-gradient(90deg, transparent, rgba(150, 210, 0, .3), transparent); }
+.light.on .game.shown { opacity: .9; filter: saturate(.85); }
+/* Compact: the mark only, smaller logos. */
+.s-compact .stage { width: 820px; height: 120px; }
+.s-compact .band { inset: 16px 20px; gap: 16px; padding: 0 18px 0 22px; border-radius: 24px; }
+.s-compact .brand { width: auto; }
+.s-compact .mark { font-size: 40px; }
+.s-compact .label, .s-compact .cta { display: none; }
+.s-compact .game { width: 60px; height: 60px; border-radius: 17px; }
+/* Logos only: no band, the tiles float. */
+.s-logos .stage { width: 760px; height: 120px; }
+.s-logos .band { inset: 0 20px; overflow: visible; background: none; border: none; box-shadow: none; padding: 0; }
+.s-logos .band::after, .s-logos .brand { display: none; }
+.s-logos .game { filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .45)) !important; }
+.s-logos.on .game.shown { opacity: .8; }
+.s-logos.on .game.shown.lit { box-shadow: none; opacity: 1; }
+.nocta .cta { display: none; }
 </style>
 </head>
 <body>
@@ -105,11 +127,24 @@ const tiles = GAMES.map(([id, c, art]) => {
   return d
 })
 
-// The band keeps its 1080 x 150 drawing and scales to the width of the source, centred vertically.
+const cls = document.body.classList
+if (q.get('theme') === 'light') cls.add('light')
+const STYLE = ['compact', 'logos'].includes(q.get('style')) ? q.get('style') : 'band'
+cls.add('s-' + STYLE)
+if (q.get('cta') === '0') cls.add('nocta')
+const SIZE = { s: .6, m: .8, l: 1 }[q.get('size')] || 1
+const POS = q.get('pos') || 'center'
+
+// The band keeps its drawing size and scales to the width of the source (times the chosen size), centred across,
+// at the top, middle or bottom of the source.
 const fit = () => {
-  const s = innerWidth / 1080
-  stage.style.transform = `translateY(-50%) scale(${s})`
-  stage.style.top = '50%'
+  const w = STYLE === 'band' ? 1080 : STYLE === 'compact' ? 820 : 760
+  const h = STYLE === 'band' ? 150 : 120
+  const s = innerWidth / 1080 * SIZE
+  const x = (innerWidth - w * s) / 2
+  const y = POS === 'top' ? 0 : POS === 'bottom' ? innerHeight - h * s : (innerHeight - h * s) / 2
+  stage.style.transform = `translate(${x}px, ${y}px) scale(${s})`
+  stage.style.top = '0'
 }
 fit(); addEventListener('resize', fit)
 
