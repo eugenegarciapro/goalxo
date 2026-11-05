@@ -32,7 +32,10 @@ h1 span { color: var(--brand); }
 .styles i b { width: 9px; height: 9px; border-radius: 3px; background: var(--brand); }
 .styles i b:nth-child(2) { background: #4d8dff; } .styles i b:nth-child(3) { background: #b07cff; } .styles i b:nth-child(4) { background: #ec4899; }
 .styles i s { width: 22px; height: 6px; border-radius: 2px; background: #fff; margin-right: 3px; }
-.styles .st-band i, .styles .st-compact i { background: #1b2027; border: 1px solid rgba(200,255,61,.35); }
+.styles .st-band i, .styles .st-compact i, .styles .st-flash i, .styles .st-ticker i, .styles .st-punch i { background: #1b2027; border: 1px solid rgba(200,255,61,.35); }
+.styles i em { width: 12px; height: 22px; margin-left: -6px; border-radius: 7px 0 0 7px; background: var(--brand); }
+.styles .st-flash i b { width: 14px; height: 14px; } .styles .st-punch i s { width: 14px; height: 9px; }
+.styles .st-punch i s + s { margin-left: -2px; }
 input[type=range] { width: 100%; accent-color: var(--brand); }
 .switch { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 600; }
 .switch input { width: 40px; height: 22px; accent-color: var(--brand); }
@@ -73,6 +76,9 @@ input[type=range] { width: 100%; accent-color: var(--brand); }
           <button data-v="band" class="st-band"><i><s></s><b></b><b></b><b></b><b></b></i>Bandeau</button>
           <button data-v="compact" class="st-compact"><i><b></b><b></b><b></b><b></b></i>Compact</button>
           <button data-v="logos" class="st-logos"><i><b></b><b></b><b></b><b></b></i>Logos seuls</button>
+          <button data-v="flash" class="st-flash"><i><b></b><s></s><s></s></i>Flash</button>
+          <button data-v="ticker" class="st-ticker"><i><em></em><s></s><b></b><s></s></i>Défilé</button>
+          <button data-v="punch" class="st-punch"><i><s></s><s></s><b></b><b></b></i>Choc</button>
         </div>
       </div>
       <div class="field"><div class="lbl">Fond du bandeau</div>
@@ -128,7 +134,7 @@ const render = (reload = true) => {
   $('show').value = st.show; $('show-v').textContent = st.show + ' s'
   $('hide').value = st.hide; $('hide-v').textContent = st.hide + ' s'
   $('cta').checked = st.cta === '1'
-  $('cta').closest('.field').style.opacity = st.style === 'band' ? 1 : .4
+  $('cta').closest('.field').style.opacity = ['band', 'flash'].includes(st.style) ? 1 : .4
   $('url').value = link(false); $('open').href = link(false)
   try { localStorage.setItem('goalxo-overlay', JSON.stringify(st)) } catch {}
   if (reload) { clearTimeout(timer); timer = setTimeout(() => { $('frame').src = link(true).replace(base, base + 'index.html') }, 150) }
