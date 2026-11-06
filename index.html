@@ -9,296 +9,245 @@
 <style>
 /*
   GoalXO overlay for TikTok Live Studio (link source), transparent background.
-  A thin band: shows 15 s (logos pop in, each game is lit in turn), hides 30 s, loops.
-  URL options (built by editor.html): ?lang=fr|en|es ?show=15 ?hide=30 ?theme=light ?style=compact|logos ?cta=0 ?preview
-  The band is drawn at 1080 px wide and scales to the source's width.
+  A band that tells a tiny funny story about the game, ends on goalxo.fun + the App Store, hides, loops.
+  URL options (built by editor.html): ?style=score|var|chat ?lang=fr|en|es ?name=<pseudo> ?show=15 ?hide=30 ?theme=light ?preview
+  Drawn at 1000 × 180 px, scaled to fill the source.
 */
-:root { color-scheme: light; --brand: #c8ff3d; --ink: #0b0f05; --band: rgba(9, 12, 16, .86); --text: #f2f4f6; --muted: #9aa3ae; }
+:root { color-scheme: light; --brand: #c8ff3d; --lime: #c8ff3d; --ink: #0b0f05; --band: rgba(9, 12, 16, .88); --text: #f2f4f6; --muted: #9aa3ae; --chip: rgba(255, 255, 255, .08); }
 html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
 body.preview { background: repeating-conic-gradient(#3a3f47 0 25%, #2a2e35 0 50%) 0 0 / 32px 32px; }
-.stage { position: fixed; left: 0; top: 50%; width: 1080px; height: 150px; transform-origin: 0 0; }
+.stage { position: fixed; left: 0; top: 0; width: 1000px; height: 180px; transform-origin: 0 0; }
 .band {
-  position: absolute; inset: 22px 24px; display: flex; align-items: center; gap: 22px; padding: 0 22px 0 26px;
-  border-radius: 28px; background: var(--band); border: 1.5px solid rgba(200, 255, 61, .28);
+  position: absolute; inset: 18px 20px; display: flex; align-items: center; gap: 22px; padding: 0 26px 0 0;
+  border-radius: 30px; background: var(--band); border: 1.5px solid rgba(200, 255, 61, .28);
   box-shadow: 0 10px 40px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .06);
-  clip-path: inset(0 50% 0 50% round 28px); opacity: 0;
-  transition: clip-path .4s cubic-bezier(.7, 0, .2, 1), opacity .2s;
   font-family: Inter, system-ui, sans-serif; color: var(--text); overflow: hidden;
+  transform: translateY(40px) scale(.92); opacity: 0;
+  transition: transform .45s cubic-bezier(.3, 1.5, .5, 1), opacity .25s;
 }
-.on .band { clip-path: inset(0 0 0 0 round 28px); opacity: 1; }
-/* A lime light sweeping across as the band opens. */
-.band::after {
-  content: ''; position: absolute; top: 0; bottom: 0; width: 120px; left: -160px;
-  background: linear-gradient(90deg, transparent, rgba(200, 255, 61, .22), transparent); transform: skewX(-18deg);
-}
-.on .band::after { animation: sweep .7s .2s ease-out; }
-@keyframes sweep { to { left: 110%; } }
-
-.brand { flex: none; width: 330px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-.mark { font-family: 'Bebas Neue', sans-serif; font-size: 54px; line-height: .9; letter-spacing: .02em; }
-.mark span { color: var(--brand); }
-.label { position: relative; height: 32px; overflow: hidden; }
-.label b {
-  position: absolute; inset: 0; font-size: 24px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
-  white-space: nowrap; transition: transform .22s cubic-bezier(.3, 1.4, .5, 1), opacity .18s;
-}
-.label b.out { transform: translateY(-100%); opacity: 0; }
-.label b.in { transform: translateY(100%); opacity: 0; }
-.cta { font-size: 18px; font-weight: 600; color: var(--muted); }
-.cta em { font-style: normal; color: var(--brand); }
-
-.games { flex: 1; display: flex; justify-content: space-between; align-items: center; height: 100%; }
-.game {
-  width: 66px; height: 66px; border-radius: 19px; transform: translateY(36px) scale(.4) rotate(-12deg); opacity: 0;
-  transition: transform .32s cubic-bezier(.3, 1.6, .5, 1), opacity .2s, filter .2s;
-}
-.game svg { display: block; width: 100%; height: 100%; }
-.on .game.shown { transform: none; opacity: .55; filter: saturate(.75); }
-.on .game.shown.lit { transform: translateY(-3px) scale(1.12); opacity: 1; filter: none; box-shadow: 0 0 0 3px var(--band), 0 0 0 5px var(--c), 0 8px 26px -4px var(--c); }
-.game.gone { transform: translateY(-30px) scale(.5) !important; opacity: 0 !important; transition-duration: .22s; }
-
-/* Light theme: white band, dark text. */
-.light { --band: rgba(255, 255, 255, .94); --text: #0b0f05; --muted: #5d6570; }
+.on .band { transform: none; opacity: 1; }
+.light { --band: rgba(255, 255, 255, .95); --text: #0b0f05; --muted: #5d6570; --lime: #4f8a00; --chip: rgba(11, 15, 5, .06); }
 .light .band { border-color: rgba(11, 15, 5, .12); box-shadow: 0 10px 34px rgba(0, 0, 0, .18); }
-.light .mark span, .light .cta em { color: #5a8f00; }
-.light .band::after { background: linear-gradient(90deg, transparent, rgba(150, 210, 0, .3), transparent); }
-.light.on .game.shown { opacity: .9; filter: saturate(.85); }
-/* Compact: the mark only, smaller logos. */
-.s-compact .stage { width: 820px; height: 120px; }
-.s-compact .band { inset: 16px 20px; gap: 16px; padding: 0 18px 0 22px; border-radius: 24px; }
-.s-compact .brand { width: auto; }
-.s-compact .mark { font-size: 40px; }
-.s-compact .label, .s-compact .cta { display: none; }
-.s-compact .game { width: 60px; height: 60px; border-radius: 17px; }
-/* Logos only: no band, the tiles float. */
-.s-logos .stage { width: 760px; height: 120px; }
-.s-logos .band { inset: 0 20px; overflow: visible; background: none; border: none; box-shadow: none; padding: 0; }
-.s-logos .band::after, .s-logos .brand { display: none; }
-.s-logos .game { filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .45)) !important; }
-.s-logos.on .game.shown { opacity: .8; }
-.s-logos.on .game.shown.lit { box-shadow: none; opacity: 1; }
-.nocta .cta, .nocta .fl-site { display: none; }
 
-/* Flash: one game at a time, big logo and big name. */
-.s-flash .stage { width: 860px; height: 150px; }
-.s-flash .band { gap: 24px; padding: 0 30px 0 16px; }
-.fl-logo { position: relative; flex: none; width: 92px; height: 92px; }
-.fl-logo .game { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 26px; opacity: 1; transform: none; transition: none; }
-.fl-logo .game.in { animation: pop .34s cubic-bezier(.3, 1.6, .5, 1) both; }
-.fl-logo .game.out { animation: drop .2s ease-in both; }
-@keyframes pop { from { transform: scale(.3) rotate(-25deg); opacity: 0; } }
-@keyframes drop { to { transform: translateY(-40px) scale(.6); opacity: 0; } }
-.fl-name { flex: 1; position: relative; height: 64px; overflow: hidden; }
-.fl-name b { position: absolute; inset: 0; font: 400 64px/1 'Bebas Neue', sans-serif; letter-spacing: .02em; white-space: nowrap; text-transform: uppercase;
-  transition: transform .22s cubic-bezier(.3, 1.4, .5, 1), opacity .18s; }
-.fl-name b.out { transform: translateY(-100%); opacity: 0; }
-.fl-name b.in { transform: translateY(100%); opacity: 0; }
-.fl-side { flex: none; text-align: right; }
-.fl-side .mark { font-size: 46px; }
-.fl-site { font-size: 18px; font-weight: 800; color: var(--brand); }
-.light .fl-site { color: #5a8f00; }
+/* The GOALXO block on the left, like a TV channel's bug. */
+.bug { flex: none; align-self: stretch; width: 150px; display: grid; place-items: center; background: var(--brand); color: var(--ink);
+  font: 400 50px/.9 'Bebas Neue', sans-serif; letter-spacing: .02em; text-align: center; }
+.bug small { display: block; font: 800 13px/1 Inter, sans-serif; letter-spacing: .14em; opacity: .7; margin-top: 4px; }
 
-/* Défilé: the games run by, the GOALXO mark stays on the left. */
-.s-ticker .stage { width: 1080px; height: 130px; }
-.s-ticker .band { inset: 18px 24px; padding: 0; gap: 0; }
-.tk-mark { flex: none; height: 100%; display: flex; align-items: center; padding: 0 26px; background: var(--brand); color: var(--ink);
-  font: 400 50px/1 'Bebas Neue', sans-serif; letter-spacing: .02em; z-index: 1; }
-.tk-view { flex: 1; overflow: hidden; height: 100%; -webkit-mask: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
-.tk-row { display: flex; align-items: center; height: 100%; width: max-content; animation: run var(--dur, 14s) linear infinite; }
-.tk-item { display: flex; align-items: center; gap: 14px; padding-right: 40px; font: 400 46px/1 'Bebas Neue', sans-serif; letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; }
-.tk-item .game { width: 54px; height: 54px; border-radius: 16px; opacity: 1; transform: none; }
-.tk-item.site { color: var(--brand); }
-.light .tk-item.site { color: #5a8f00; }
-@keyframes run { to { transform: translateX(-50%); } }
+/* Lines that roll to the next one. */
+.roll { position: relative; overflow: hidden; }
+.roll > * { position: absolute; left: 0; right: 0; top: 0; white-space: nowrap; transition: transform .32s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
+.roll > .in { transform: translateY(100%); opacity: 0; }
+.roll > .out { transform: translateY(-100%); opacity: 0; }
+.main { height: 58px; font: 400 58px/1 'Bebas Neue', sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+.sub { height: 26px; margin-top: 4px; font: 600 20px/26px Inter, sans-serif; color: var(--muted); }
+.lime { color: var(--lime); }
+.store { display: inline-flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; height: 26px; border-radius: 9px; background: var(--text); color: var(--band);
+  font: 800 15px/1 Inter, sans-serif; vertical-align: top; }
+.light .store { color: #fff; }
+.store svg { width: 16px; height: 16px; }
+.say { flex: 1; min-width: 0; }
 
-/* Choc: a big line that flips, the logos jumping in a wave. */
-.s-punch .stage { width: 1000px; height: 150px; }
-.s-punch .band { gap: 20px; padding: 0 28px 0 32px; }
-.pu-text { flex: 1; position: relative; height: 78px; overflow: hidden; }
-.pu-text b { position: absolute; inset: 0; font: 400 78px/1 'Bebas Neue', sans-serif; letter-spacing: .02em; white-space: nowrap; text-transform: uppercase;
-  transition: transform .24s cubic-bezier(.3, 1.4, .5, 1), opacity .18s; }
-.pu-text b.lime { color: var(--brand); }
-.light .pu-text b.lime { color: #5a8f00; }
-.pu-text b.out { transform: translateY(-100%) rotateX(60deg); opacity: 0; }
-.pu-text b.in { transform: translateY(100%) rotateX(-60deg); opacity: 0; }
-.pu-grid { flex: none; display: grid; grid-template-columns: repeat(4, 44px); gap: 8px; }
-.pu-grid .game { width: 44px; height: 44px; border-radius: 13px; }
-.on .pu-grid .game.shown { opacity: 1; filter: none; animation: hop .9s ease-in-out infinite; animation-delay: calc(var(--i) * 70ms + .4s); }
-@keyframes hop { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(-8px) scale(1.08); } }
+/* ---- Score: a TV scoreboard, the streamer scores again, the chat is told to equalise. ---- */
+.s-score .band { gap: 18px; }
+.s-score .bug { width: 120px; font-size: 42px; }
+.s-score .main { height: 48px; font-size: 46px; }
+.s-score .sub { font-size: 17px; }
+.board { flex: none; display: flex; align-items: center; gap: 10px; height: 64px; padding: 0 12px; border-radius: 16px; background: var(--chip); }
+.team { font: 800 16px/1 Inter, sans-serif; letter-spacing: .05em; text-transform: uppercase; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.score { display: flex; align-items: center; gap: 4px; font: 400 46px/1 'Bebas Neue', sans-serif; }
+.score b { font-weight: 400; display: inline-block; min-width: 22px; text-align: center; }
+.score i { font-style: normal; opacity: .5; }
+.score b.pop { animation: pop .5s cubic-bezier(.3, 1.8, .5, 1); color: var(--lime); }
+@keyframes pop { 0% { transform: translateY(-60%) scale(.4); opacity: 0; } }
+.clock { font: 800 13px/1 Inter, sans-serif; padding: 5px 7px; border-radius: 8px; background: #fe2c55; color: #fff; }
+.goal .band { animation: shake .45s; }
+.goal .band::before { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 120% at 40% 50%, rgba(200, 255, 61, .35), transparent 70%); animation: flash .9s ease-out forwards; pointer-events: none; }
+@keyframes shake { 20% { transform: translateX(-6px) rotate(-.6deg); } 40% { transform: translateX(6px) rotate(.6deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@keyframes flash { to { opacity: 0; } }
+.ball { position: absolute; width: 34px; height: 34px; left: 130px; top: 50%; margin-top: -17px; font-size: 30px; line-height: 34px; opacity: 0; }
+.goal .ball { animation: shot .7s cubic-bezier(.2, .7, .3, 1); }
+@keyframes shot { 0% { opacity: 1; transform: translate(0, 30px) rotate(0) scale(.6); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(330px, -10px) rotate(540deg) scale(1.1); } }
+
+/* ---- VAR: the referee draws the screen, checks the streamer, the verdict is GoalXO. ---- */
+.var { flex: none; position: relative; width: 150px; align-self: stretch; display: grid; place-items: center; background: #11161c; }
+.light .var { background: #0b0f05; }
+.var svg { width: 112px; height: 84px; overflow: visible; }
+.var rect { fill: none; stroke: #fff; stroke-width: 6; stroke-linejoin: round; stroke-dasharray: 340; stroke-dashoffset: 340; }
+.on .var rect { animation: draw .9s .25s ease-in-out forwards; }
+.var.ok rect { stroke: var(--brand); }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.var text { font: 400 34px 'Bebas Neue', sans-serif; letter-spacing: .06em; fill: #fff; }
+.var.ok text { fill: var(--brand); }
+.scan { position: absolute; left: 22px; right: 22px; height: 3px; top: 50%; background: var(--brand); box-shadow: 0 0 12px var(--brand); opacity: 0; }
+.var.checking .scan { animation: scan 1s ease-in-out infinite alternate; }
+@keyframes scan { from { opacity: 1; transform: translateY(-34px); } to { opacity: 1; transform: translateY(34px); } }
+.stamp { position: absolute; right: 26px; top: 50%; margin-top: -40px; width: 80px; height: 80px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--brand); color: var(--ink); font: 400 46px/1 'Bebas Neue', sans-serif; transform: scale(2.4) rotate(-30deg); opacity: 0; }
+.stamped .stamp { transition: transform .35s cubic-bezier(.3, 1.6, .5, 1), opacity .15s; transform: rotate(-12deg); opacity: 1; }
+.s-var .say { padding-right: 90px; }
+
+/* ---- Tchat: the chat asks what the game is, the streamer answers. ---- */
+.s-chat .band { padding: 0 22px; gap: 18px; }
+.feed { flex: 1; min-width: 0; align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 8px 0; overflow: hidden; }
+.msg { display: flex; align-items: center; gap: 12px; flex: none; animation: rise .35s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes rise { from { transform: translateY(40px) scale(.9); opacity: 0; } }
+.msg .av { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font: 800 18px/1 Inter, sans-serif; color: var(--ink); }
+.msg .bub { min-width: 0; padding: 5px 14px 6px; border-radius: 18px; background: var(--chip); }
+.msg .who { display: block; font: 800 12px/1.2 Inter, sans-serif; color: var(--muted); }
+.msg .txt { display: block; font: 800 21px/1.2 Inter, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg.me .bub { background: rgba(200, 255, 61, .16); }
+.light .msg.me .bub { background: rgba(110, 170, 0, .16); }
+.msg.cta .bub { background: var(--brand); color: var(--ink); display: flex; align-items: center; gap: 14px; }
+.msg.cta .txt { font: 400 38px/1 'Bebas Neue', sans-serif; letter-spacing: .03em; }
+.msg.cta .store { background: var(--ink); color: var(--brand); }
+.dots { display: inline-flex; gap: 5px; padding: 6px 0; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: dot 1s infinite; }
+.dots i:nth-child(2) { animation-delay: .15s; } .dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 30% { transform: translateY(-5px); opacity: 1; } 0%, 60%, 100% { opacity: .4; } }
+.side { flex: none; text-align: center; font: 400 44px/.9 'Bebas Neue', sans-serif; letter-spacing: .02em; }
+.side span { color: var(--lime); }
+.side small { display: block; margin-top: 6px; font: 800 14px/1 Inter, sans-serif; color: var(--muted); letter-spacing: .02em; }
 </style>
 </head>
 <body>
-<div class="stage" id="stage">
-  <div class="band">
-    <div class="brand">
-      <div class="mark">GOAL<span>XO</span></div>
-      <div class="label" id="label"><b id="name"></b></div>
-      <div class="cta" id="cta"></div>
-    </div>
-    <div class="games" id="games"></div>
-  </div>
-</div>
+<div class="stage" id="stage"><div class="band" id="band"></div></div>
 <script>
-const INK = '#0b0f05'
-const GAMES = [
-  ['ttt', '#c8ff3d', `<path d="M17 22.5l9 9m0-9l-9 9" stroke="${INK}" stroke-width="5.5" stroke-linecap="round"/><circle cx="42" cy="37" r="6.2" fill="none" stroke="${INK}" stroke-width="5.5"/>`],
-  ['vv', '#4d8dff', `<path d="M18 25h24m-6-6 6 6-6 6M46 39H22m6-6-6 6 6 6" fill="none" stroke="${INK}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>`],
-  ['guess', '#22c55e', `<path d="M25 25a7 7 0 1 1 10 6.3c-1.9 1-3 2.4-3 4.4v1.3" fill="none" stroke="${INK}" stroke-width="5.5" stroke-linecap="round"/><circle cx="32" cy="45" r="3.4" fill="${INK}"/>`],
-  ['career', '#2ed3b7', `<path d="M19 44l10-10 6 6 10-14" fill="none" stroke="${INK}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="45" cy="22" r="4.6" fill="${INK}"/>`],
-  ['top10', '#b07cff', `<rect x="17" y="31" width="9" height="15" rx="2.5" fill="${INK}"/><rect x="27.5" y="18" width="9" height="28" rx="2.5" fill="${INK}"/><rect x="38" y="25" width="9" height="21" rx="2.5" fill="${INK}"/>`],
-  ['xoguessr', '#38bdf8', `<path fill-rule="evenodd" fill="${INK}" d="M32 49c-6-7.4-12-14.5-12-21a12 12 0 0 1 24 0c0 6.5-6 13.6-12 21zm0-16.2a4.8 4.8 0 1 0 0-9.6 4.8 4.8 0 0 0 0 9.6z"/>`],
-  ['quiz', '#f5a524', `<path fill="${INK}" d="M35.5 15 20 35h10l-3.5 14L44 29H34z" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`],
-  ['score', '#ec4899', `<rect x="15" y="22" width="13" height="20" rx="4" fill="${INK}"/><rect x="36" y="22" width="13" height="20" rx="4" fill="${INK}"/><circle cx="32" cy="28.5" r="2" fill="${INK}"/><circle cx="32" cy="35.5" r="2" fill="${INK}"/>`],
-]
+const APPLE_FREE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M12 7v7m-3-3 3 3 3-3"/></svg>'
 const TEXT = {
-  fr: { cta: 'Joue gratuit sur <em>goalxo.fun</em>', all: '8 jeux de foot', free: '100 % gratuit', names: { ttt: 'Tic Tac Toe', vv: 'Vice Versa', guess: 'Devine le joueur', career: 'Devine la carrière', top10: 'Top 10', xoguessr: 'XOGuessr', quiz: 'Quiz', score: 'Devine le score' } },
-  en: { cta: 'Play free on <em>goalxo.fun</em>', all: '8 football games', free: '100% free', names: { ttt: 'Tic Tac Toe', vv: 'Vice Versa', guess: 'Guess the player', career: 'Guess the career', top10: 'Top 10', xoguessr: 'XOGuessr', quiz: 'Quiz', score: 'Guess the score' } },
-  es: { cta: 'Juega gratis en <em>goalxo.fun</em>', all: '8 juegos de fútbol', free: '100 % gratis', names: { ttt: 'Tic Tac Toe', vv: 'Vice Versa', guess: 'Adivina el jugador', career: 'Adivina la carrera', top10: 'Top 10', xoguessr: 'XOGuessr', quiz: 'Quiz', score: 'Adivina el marcador' } },
+  fr: {
+    me: 'Streamer', them: 'Le chat', store: 'Dispo sur l’App Store',
+    score: [['BUUUUT !', '⚽ Le streamer marque encore'], ['Le chat est mené 😬', 'Joueurs, carrières, scores : devine tout'], ['Égalise sur goalxo.fun', null]],
+    var: [['Vérification VAR…', 'Le streamer connaît-il vraiment le foot ?'], ['Verdict : oui 😎', 'Il s’entraîne en cachette sur GoalXO'], ['8 jeux de foot', 'Devine joueurs, carrières, scores…'], ['goalxo.fun', null]],
+    chat: [['supporter_42', 'c’est quoi ce jeu ??? 👀'], [null, 'GoalXO ! Tu devines joueurs, carrières, scores…'], ['ultra_du_75', 'trop facile 😤'], [null, 'Prouve-le 😏']],
+  },
+  en: {
+    me: 'Streamer', them: 'Chat', store: 'On the App Store',
+    score: [['GOOOAL!', '⚽ The streamer scores again'], ['Chat is losing 😬', 'Players, careers, scores: guess them all'], ['Equalise on goalxo.fun', null]],
+    var: [['VAR check…', 'Does the streamer really know football?'], ['Verdict: yes 😎', 'Secretly training on GoalXO'], ['8 football games', 'Guess players, careers, scores…'], ['goalxo.fun', null]],
+    chat: [['ultras_42', 'what is this game??? 👀'], [null, 'GoalXO! You guess players, careers, scores…'], ['bench_king', 'too easy 😤'], [null, 'Prove it 😏']],
+  },
+  es: {
+    me: 'Streamer', them: 'El chat', store: 'Disponible en App Store',
+    score: [['¡GOOOL!', '⚽ El streamer marca otra vez'], ['El chat va perdiendo 😬', 'Jugadores, carreras, marcadores…'], ['Empata en goalxo.fun', null]],
+    var: [['Revisión del VAR…', '¿El streamer sabe de fútbol de verdad?'], ['Veredicto: sí 😎', 'Entrena a escondidas en GoalXO'], ['8 juegos de fútbol', 'Adivina jugadores, carreras, marcadores…'], ['goalxo.fun', null]],
+    chat: [['hincha_42', '¿qué juego es este??? 👀'], [null, '¡GoalXO! Adivinas jugadores, carreras, marcadores…'], ['rey_del_banquillo', 'demasiado fácil 😤'], [null, 'Demuéstralo 😏']],
+  },
 }
 const q = new URLSearchParams(location.search)
 const T = TEXT[q.get('lang')] || TEXT.fr
-const SHOW = (+q.get('show') || 15) * 1000
+const SHOW = Math.max(8, +q.get('show') || 15) * 1000
 const HIDE = (+q.get('hide') || 30) * 1000
-if (q.has('preview')) document.body.classList.add('preview')
+const NAME = (q.get('name') || '').trim().slice(0, 16) || T.me
+const STYLE = ['score', 'var', 'chat'].includes(q.get('style')) ? q.get('style') : 'score'
+const cls = document.body.classList
+cls.add('s-' + STYLE)
+if (q.has('preview')) cls.add('preview')
+if (q.get('theme') === 'light') cls.add('light')
 
 const stage = document.getElementById('stage')
-const band = stage.querySelector('.band')
-const cls = document.body.classList
-if (q.get('theme') === 'light') cls.add('light')
-const MODES = ['band', 'compact', 'logos', 'flash', 'ticker', 'punch']
-const STYLE = MODES.includes(q.get('style')) ? q.get('style') : 'band'
-cls.add('s-' + STYLE)
-if (q.get('cta') === '0') cls.add('nocta')
-const SIZES = { band: [1080, 150], compact: [820, 120], logos: [760, 120], flash: [860, 150], ticker: [1080, 130], punch: [1000, 150] }
-
-const tile = (i, extra = '') => {
-  const [, c, art] = GAMES[i]
-  const d = document.createElement('div')
-  d.className = 'game ' + extra
-  d.style.setProperty('--c', c)
-  d.style.setProperty('--i', i)
-  d.innerHTML = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="${c}"/>${art}</svg>`
-  return d
-}
-const name = (i) => T.names[GAMES[i][0]]
-
-// The band fills its source: it keeps its proportions and grows to the full height (or width), centred.
+const band = document.getElementById('band')
 const fit = () => {
-  const [w, h] = SIZES[STYLE]
-  const s = Math.min(innerWidth / w, innerHeight / h)
-  const x = (innerWidth - w * s) / 2
-  const y = (innerHeight - h * s) / 2
-  stage.style.transform = `translate(${x}px, ${y}px) scale(${s})`
-  stage.style.top = '0'
+  const s = Math.min(innerWidth / 1000, innerHeight / 180)
+  stage.style.transform = `translate(${(innerWidth - 1000 * s) / 2}px, ${(innerHeight - 180 * s) / 2}px) scale(${s})`
 }
 fit(); addEventListener('resize', fit)
 
-// A line of text that rolls to the next one.
-const roller = (box) => {
-  let current = null
-  return (text, extra = '') => {
-    const next = document.createElement('b')
-    next.textContent = text
-    next.className = 'in ' + extra
-    box.appendChild(next)
-    if (current) { const old = current; old.className = 'out ' + extra; setTimeout(() => old.remove(), 300) }
-    requestAnimationFrame(() => requestAnimationFrame(() => { next.className = extra }))
-    current = next
-  }
-}
-
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
-const open = () => cls.add('on')
-const close = async () => { cls.remove('on'); await wait(HIDE) }
-const until = (end) => Date.now() < end
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+const storeTag = () => `<span class="store">${APPLE_FREE_ICON}${T.store}</span>`
+/** A box whose line rolls up to the next one. */
+const roller = (box) => (html, extra = '') => {
+  const old = box.lastElementChild
+  const next = document.createElement('div')
+  next.className = 'in ' + extra
+  next.innerHTML = html
+  box.appendChild(next)
+  if (old) { old.className = 'out'; setTimeout(() => old.remove(), 350) }
+  requestAnimationFrame(() => requestAnimationFrame(() => { next.className = extra }))
+}
+const sayBox = () => `<div class="say"><div class="roll main"></div><div class="roll sub"></div></div>`
+const sayer = () => {
+  const main = roller(band.querySelector('.main')), sub = roller(band.querySelector('.sub'))
+  return ([m, s], last) => { main(esc(m), last ? 'lime' : ''); sub(s === null ? storeTag() : esc(s)) }
+}
 
-// Bandeau, Compact, Logos seuls: logos pop in, each one lit in turn (looping until the time is up), then fly off.
-async function rowMode() {
-  const box = document.getElementById('games')
-  const say = roller(document.getElementById('label'))
-  document.getElementById('cta').innerHTML = T.cta
-  const tiles = GAMES.map((_, i) => box.appendChild(tile(i)))
+// Score: 1-0, the streamer scores (2-0), the chat is losing, equalise on goalxo.fun.
+async function score() {
+  band.innerHTML = `<div class="bug">GOAL XO<small>LIVE</small></div>
+    <div class="board"><span class="team">${esc(NAME)}</span><span class="score"><b id="h">1</b><i>-</i><b>0</b></span><span class="team">${esc(T.them)}</span><span class="clock" id="clock">88'</span></div>
+    ${sayBox()}<span class="ball">⚽</span>`
+  const say = sayer(), h = band.querySelector('#h'), clock = band.querySelector('#clock')
+  let minute = 88
+  const tick = setInterval(() => { minute++; clock.textContent = minute > 90 ? `90+${minute - 90}'` : `${minute}'` }, 1400)
+  await wait(700)
+  cls.add('goal'); h.textContent = '2'; h.className = 'pop'
+  say(T.score[0])
+  await wait(1800); cls.remove('goal')
+  say(T.score[1]); await wait(2000)
+  say(T.score[2], true)
+  return () => clearInterval(tick)
+}
+
+// VAR: the screen is drawn and scans, the verdict, the games, the site.
+async function varCheck() {
+  band.innerHTML = `<div class="var checking"><svg viewBox="0 0 112 84"><rect x="3" y="3" width="106" height="78" rx="10"/><text x="56" y="54" text-anchor="middle">VAR</text></svg><span class="scan"></span></div>
+    ${sayBox()}<span class="stamp">XO</span>`
+  const say = sayer(), screen = band.querySelector('.var')
+  say(T.var[0]); await wait(2200)
+  screen.className = 'var ok'; cls.add('stamped')
+  say(T.var[1]); await wait(1800)
+  say(T.var[2]); await wait(1800)
+  say(T.var[3], true)
+  return () => cls.remove('stamped')
+}
+
+// Tchat: messages come up one by one, the last one is goalxo.fun + the App Store.
+async function chat() {
+  band.innerHTML = `<div class="feed"></div><div class="side">GOAL<span>XO</span><small>goalxo.fun</small></div>`
+  const feed = band.querySelector('.feed')
+  const COLORS = ['#4d8dff', '#ec4899', '#f5a524', '#2ed3b7']
+  const push = (html, kind = '') => {
+    const m = document.createElement('div')
+    m.className = 'msg ' + kind
+    m.innerHTML = html
+    feed.appendChild(m)
+    while (feed.children.length > 2) feed.firstElementChild.remove()
+    return m
+  }
+  const line = (who, text, k) => {
+    const me = who === null, name = me ? NAME : who
+    const color = me ? 'var(--brand)' : COLORS[k % COLORS.length]
+    return [`<span class="av" style="background:${color}">${esc(name[0].toUpperCase())}</span><span class="bub"><span class="who">${esc(name)}</span><span class="txt">${esc(text)}</span></span>`, me ? 'me' : '']
+  }
+  let k = 0
+  for (const [who, text] of T.chat) {
+    const [html, kind] = line(who, text, k++)
+    const typing = push(html.replace(/<span class="txt">.*<\/span><\/span>$/, '<span class="dots"><i></i><i></i><i></i></span></span>'), kind)
+    await wait(650)
+    typing.innerHTML = html
+    await wait(1250)
+  }
+  push(`<span class="bub"><span class="txt">goalxo.fun</span>${storeTag()}</span>`, 'cta')
+  return () => {}
+}
+
+const MODES = { score, var: varCheck, chat }
+// The fonts are asked for before the first frame (fonts.ready alone resolves before any text uses them).
+const fonts = ["400 50px 'Bebas Neue'", '600 20px Inter', '800 20px Inter'].map((f) => document.fonts.load(f, 'GOALXO é'))
+Promise.race([Promise.all(fonts), wait(3000)]).catch(() => {}).then(async () => {
   for (;;) {
     const end = Date.now() + SHOW
-    tiles.forEach((t) => t.className = 'game')
-    say(T.all)
-    open()
-    await wait(250)
-    for (const t of tiles) { t.classList.add('shown'); await wait(40) }
-    await wait(250)
-    for (let i = 0; until(end - 900); i = (i + 1) % tiles.length) {
-      tiles.forEach((t, j) => t.classList.toggle('lit', j === i))
-      say(name(i))
-      await wait(850)
-    }
-    tiles.forEach((t) => t.classList.add('lit'))
-    say(T.all)
+    cls.add('on')
+    const stop = await MODES[STYLE]()
+    await wait(Math.max(1500, end - Date.now()))
+    cls.remove('on')
     await wait(500)
-    for (const t of tiles) { t.classList.add('gone'); await wait(25) }
-    await wait(150)
-    await close()
+    stop()
+    band.innerHTML = ''
+    await wait(HIDE)
   }
-}
-
-// Flash: one big game at a time.
-async function flashMode() {
-  band.innerHTML = `<div class="fl-logo"></div><div class="fl-name"></div>
-    <div class="fl-side"><div class="mark">GOAL<span>XO</span></div><div class="fl-site">goalxo.fun</div></div>`
-  const logo = band.querySelector('.fl-logo')
-  const say = roller(band.querySelector('.fl-name'))
-  for (;;) {
-    const end = Date.now() + SHOW
-    open()
-    await wait(200)
-    for (let i = 0; until(end - 300); i = (i + 1) % GAMES.length) {
-      const old = logo.firstChild
-      if (old) { old.className = 'game out'; setTimeout(() => old.remove(), 200) }
-      logo.appendChild(tile(i, 'in'))
-      say(name(i))
-      await wait(1000)
-    }
-    await close()
-    logo.innerHTML = ''
-  }
-}
-
-// Défilé: the games and the site run by.
-async function tickerMode() {
-  const items = GAMES.map((_, i) => `<div class="tk-item">${tile(i).outerHTML}${name(i)}</div>`).join('')
-    + `<div class="tk-item site">goalxo.fun</div>`
-  band.innerHTML = `<div class="tk-mark">GOAL<span style="color:inherit;opacity:.7">XO</span></div><div class="tk-view"><div class="tk-row">${items}${items}</div></div>`
-  const row = band.querySelector('.tk-row')
-  await document.fonts.ready
-  row.style.setProperty('--dur', (row.scrollWidth / 2 / 260) + 's')
-  for (;;) {
-    open()
-    await wait(SHOW)
-    await close()
-  }
-}
-
-// Choc: a big line that flips between three messages, the logos jumping in a wave.
-async function punchMode() {
-  band.innerHTML = `<div class="pu-text"></div><div class="pu-grid"></div>`
-  const grid = band.querySelector('.pu-grid')
-  const tiles = GAMES.map((_, i) => grid.appendChild(tile(i)))
-  const say = roller(band.querySelector('.pu-text'))
-  const lines = [[T.all, ''], [T.free, ''], ['goalxo.fun', 'lime']]
-  for (;;) {
-    const end = Date.now() + SHOW
-    tiles.forEach((t) => t.className = 'game')
-    open()
-    await wait(200)
-    for (const t of tiles) { t.classList.add('shown'); await wait(30) }
-    for (let i = 0; until(end - 300); i = (i + 1) % lines.length) {
-      say(...lines[i])
-      await wait(1300)
-    }
-    await close()
-  }
-}
-
-document.fonts.ready.then({ flash: flashMode, ticker: tickerMode, punch: punchMode }[STYLE] || rowMode)
+})
 </script>
 </body>
 </html>

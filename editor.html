@@ -7,149 +7,150 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap">
 <style>
-/* Overlay editor: settings on the left, a live preview of the scene on the right, the link to copy below. */
-:root { color-scheme: light; --bg: #07090d; --card: #0f1318; --line: rgba(255,255,255,.09); --text: #f2f4f6; --muted: #8d96a3; --brand: #c8ff3d; --ink: #0b0f05; }
+/*
+  Overlay editor. Computer: the settings on the left, the live preview fixed on the right at the window's full height.
+  Phone: settings, then the preview, the copy button stays at the bottom.
+*/
+:root { color-scheme: dark; --bg: #07090d; --line: rgba(255,255,255,.1); --soft: rgba(255,255,255,.05); --text: #f2f4f6; --muted: #8d96a3; --brand: #c8ff3d; --ink: #0b0f05; --pw: calc(100vh * 9 / 16); }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 Inter, system-ui, sans-serif; }
-.wrap { max-width: 1240px; margin: 0 auto; padding: 32px 20px 48px; }
-h1 { margin: 0; font: 400 52px/0.95 'Bebas Neue', sans-serif; letter-spacing: .02em; }
+html { background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 Inter, system-ui, sans-serif; }
+.side { padding: 40px 48px 48px; max-width: 560px; }
+h1 { margin: 0; font: 400 56px/.95 'Bebas Neue', sans-serif; letter-spacing: .02em; }
 h1 span { color: var(--brand); }
-.lead { margin: 8px 0 26px; color: var(--muted); max-width: 64ch; }
-.grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
-@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-.panel { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px; }
-.field + .field { margin-top: 18px; }
-.field > label, .field > .lbl { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-.field .val { color: var(--brand); }
-.seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+.lead { margin: 8px 0 32px; color: var(--muted); }
+.field { margin-bottom: 26px; }
+.lbl { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lbl .val { color: var(--brand); }
+.styles { display: grid; gap: 8px; }
+.styles button { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); background: none; color: var(--text); font: inherit; cursor: pointer; }
+.styles button:hover { background: var(--soft); }
+.styles button.on { border-color: var(--brand); background: rgba(200,255,61,.07); }
+.styles .ic { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--soft); font-size: 22px; }
+.styles .on .ic { background: var(--brand); }
+.styles b { display: block; font-weight: 800; }
+.styles small { color: var(--muted); font-size: 13px; }
+.seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--soft); }
 .seg button { flex: 1; border: 0; background: none; color: var(--text); font: inherit; font-weight: 600; padding: 9px 6px; border-radius: 10px; cursor: pointer; }
-.seg button:hover { background: rgba(255,255,255,.06); }
 .seg button.on { background: var(--brand); color: var(--ink); font-weight: 800; }
-.styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.styles button { min-width: 0; white-space: nowrap; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: var(--text); border-radius: 14px; padding: 10px 6px 8px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.styles button.on { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset; }
-.styles i { display: flex; align-items: center; gap: 3px; height: 22px; padding: 0 6px; border-radius: 7px; }
-.styles i b { width: 9px; height: 9px; border-radius: 3px; background: var(--brand); }
-.styles i b:nth-child(2) { background: #4d8dff; } .styles i b:nth-child(3) { background: #b07cff; } .styles i b:nth-child(4) { background: #ec4899; }
-.styles i s { width: 22px; height: 6px; border-radius: 2px; background: #fff; margin-right: 3px; }
-.styles .st-band i, .styles .st-compact i, .styles .st-flash i, .styles .st-ticker i, .styles .st-punch i { background: #1b2027; border: 1px solid rgba(200,255,61,.35); }
-.styles i em { width: 12px; height: 22px; margin-left: -6px; border-radius: 7px 0 0 7px; background: var(--brand); }
-.styles .st-flash i b { width: 14px; height: 14px; } .styles .st-punch i s { width: 14px; height: 9px; }
-.styles .st-punch i s + s { margin-left: -2px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+input[type=text] { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--soft); color: var(--text); font: inherit; font-weight: 600; }
+input[type=text]:focus { outline: none; border-color: var(--brand); }
 input[type=range] { width: 100%; accent-color: var(--brand); }
-.switch { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 600; }
-.switch input { width: 40px; height: 22px; accent-color: var(--brand); }
+.link { display: flex; gap: 8px; }
+.link input { flex: 1; min-width: 0; font: 600 12.5px ui-monospace, Consolas, monospace; color: var(--muted); }
+.btn { flex: none; border: 0; border-radius: 14px; padding: 0 20px; min-height: 46px; font: inherit; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+.btn.primary { background: var(--brand); color: var(--ink); }
+.btn.ghost { background: var(--soft); color: var(--text); }
+.btn:active { transform: scale(.97); }
+.tip { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+.tip b { color: var(--text); }
 
-.grid { align-items: stretch; }
-.preview { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
-.ph { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.ph span { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.ph .btn { min-height: 34px; padding: 0 14px; }
-/* A portrait live: webcam on top, the overlay right under it, a Top 10 game below. */
-.screen { flex: 1; min-height: 0; aspect-ratio: 9 / 16; align-self: center; height: 100%; max-width: 100%; display: flex; flex-direction: column;
-  border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #05070a; container-type: inline-size; }
+/* The live: webcam on top, the overlay right under it, a Top 10 game below. */
+.preview { position: fixed; top: 0; right: 0; bottom: 0; width: var(--pw); }
+.screen { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; background: #05070a; container-type: inline-size; }
 .cam { position: relative; flex: 0 0 38%; background: radial-gradient(80% 90% at 50% 30%, #4a3a52, #1c1822 70%); overflow: hidden; }
 .cam svg { position: absolute; left: 50%; bottom: 0; width: 62%; transform: translateX(-50%); }
 .cam .live { position: absolute; top: 4cqw; left: 4cqw; padding: .6cqw 2cqw; border-radius: 1.4cqw; background: #fe2c55; color: #fff; font: 800 3.2cqw/1.3 Inter, sans-serif; }
-.ovl { flex: none; position: relative; width: 100%; background: repeating-linear-gradient(45deg, rgba(200,255,61,.05) 0 6px, transparent 6px 12px); outline: 1px dashed rgba(200,255,61,.55); outline-offset: -1px; }
-.ovl iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
+.replay { position: absolute; top: 3cqw; right: 3cqw; z-index: 2; border: 0; border-radius: 99px; padding: 1.6cqw 3.4cqw; background: rgba(0,0,0,.45); color: #fff; font: 800 3.2cqw/1 Inter, sans-serif; cursor: pointer; backdrop-filter: blur(6px); }
+.ovl { flex: none; position: relative; width: 100%; aspect-ratio: 1000 / 180; }
+.ovl iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; color-scheme: light; }
 .game { flex: 1; min-height: 0; padding: 4cqw 5cqw; background: linear-gradient(#0d1116, #07090d); display: flex; flex-direction: column; gap: 1.6cqw; overflow: hidden; }
 .game h3 { margin: 0 0 1cqw; font: 400 7cqw/1 'Bebas Neue', sans-serif; letter-spacing: .02em; color: #b07cff; }
 .game h3 small { display: block; font: 600 3cqw/1.3 Inter, sans-serif; color: var(--muted); }
 .row { display: flex; align-items: center; gap: 2.4cqw; padding: 1.5cqw 2.4cqw; border-radius: 2cqw; background: rgba(255,255,255,.05); font: 700 3.4cqw/1.2 Inter, sans-serif; }
 .row i { font-style: normal; width: 5cqw; color: var(--muted); }
 .row.ok { background: rgba(176,124,255,.18); }
-.row.ok b { color: #fff; } .row b { color: transparent; text-shadow: 0 0 6px rgba(255,255,255,.35); }
+.row b { color: transparent; text-shadow: 0 0 6px rgba(255,255,255,.35); }
+.row.ok b { color: #fff; text-shadow: none; }
 
-.link { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-.link input { flex: 1; min-width: 240px; background: #0b0e12; border: 1px solid var(--line); color: var(--text); border-radius: 14px; padding: 14px 16px; font: 600 13px ui-monospace, Consolas, monospace; }
-.btn { border: 0; border-radius: 14px; padding: 0 22px; min-height: 48px; font: inherit; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
-.btn.primary { background: var(--brand); color: var(--ink); }
-.btn.ghost { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid var(--line); }
-.btn:active { transform: scale(.97); }
-.tip { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
-.tip b { color: var(--text); }
-.size { margin-top: 18px; padding: 14px 16px; border-radius: 14px; border: 1px dashed rgba(200,255,61,.45); background: rgba(200,255,61,.05); }
-.size .lbl { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.size strong { display: block; margin-top: 4px; font: 400 34px/1 'Bebas Neue', sans-serif; letter-spacing: .03em; color: var(--brand); }
-.size p { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; }
+@media (min-width: 900px) {
+  .side { margin-right: var(--pw); max-width: none; display: flex; justify-content: center; }
+  .side > div { width: 100%; max-width: 520px; }
+}
+/* Phone (or a narrow window): one column, the preview in the flow, the copy button stuck at the bottom. */
+@media (max-width: 899px) {
+  .side { padding: 24px 16px 110px; max-width: none; }
+  h1 { font-size: 44px; }
+  .lead { margin-bottom: 24px; }
+  .preview { position: static; width: min(100%, 64vh * 9 / 16); margin: 4px auto 26px; }
+  .screen { height: auto; aspect-ratio: 9 / 16; border-radius: 20px; }
+  .link input { display: none; }
+  .link { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--bg) 30%); }
+  .link .btn.primary { flex: 1; }
+  .linkfield .lbl, .linkfield .tip { display: none; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="side"><div>
   <h1>Overlay <span>GoalXO</span></h1>
-  <p class="lead">Règle ton bandeau, regarde l'aperçu, puis copie le lien et colle-le dans TikTok Live Studio (source « Lien »).</p>
+  <p class="lead">Choisis ton overlay, copie le lien et colle-le dans TikTok Live Studio.</p>
 
-  <div class="grid">
-    <div class="panel">
-      <div class="field">
-        <div class="lbl">Style</div>
-        <div class="styles" data-k="style">
-          <button data-v="band" class="st-band"><i><s></s><b></b><b></b><b></b><b></b></i>Bandeau</button>
-          <button data-v="compact" class="st-compact"><i><b></b><b></b><b></b><b></b></i>Compact</button>
-          <button data-v="logos" class="st-logos"><i><b></b><b></b><b></b><b></b></i>Logos</button>
-          <button data-v="flash" class="st-flash"><i><b></b><s></s><s></s></i>Flash</button>
-          <button data-v="ticker" class="st-ticker"><i><em></em><s></s><b></b><s></s></i>Défilé</button>
-          <button data-v="punch" class="st-punch"><i><s></s><s></s><b></b><b></b></i>Choc</button>
-        </div>
-      </div>
-      <div class="field"><div class="lbl">Fond du bandeau</div>
-        <div class="seg" data-k="theme"><button data-v="dark">Noir</button><button data-v="light">Blanc</button></div></div>
-      <div class="field"><div class="lbl">Langue</div>
-        <div class="seg" data-k="lang"><button data-v="fr">FR</button><button data-v="en">EN</button><button data-v="es">ES</button></div></div>
-      <div class="field"><label for="show">Affiché pendant <span class="val" id="show-v"></span></label>
-        <input type="range" id="show" min="8" max="40" step="1"></div>
-      <div class="field"><label for="hide">Caché pendant <span class="val" id="hide-v"></span></label>
-        <input type="range" id="hide" min="5" max="180" step="5"></div>
-      <div class="field"><label class="switch">Afficher « goalxo.fun » <input type="checkbox" id="cta"></label></div>
-      <div class="size">
-        <div class="lbl">Taille de la source</div>
-        <strong id="dims"></strong>
-        <p>Donne cette taille à la source « Lien » (ou garde ce rapport), puis place-la où tu veux : sous ta webcam, c'est parfait.</p>
-      </div>
-    </div>
-
-    <div class="panel preview">
-      <div class="ph"><span>Aperçu du live</span><button class="btn ghost" id="replay">↻ Rejouer</button></div>
-      <div class="screen">
-        <div class="cam">
-          <span class="live">LIVE</span>
-          <svg viewBox="0 0 200 170" aria-hidden="true"><circle cx="100" cy="62" r="40" fill="#7d6a86"/><path d="M20 170c4-46 38-72 80-72s76 26 80 72z" fill="#5e4f66"/></svg>
-        </div>
-        <div class="ovl" id="ovl"><iframe id="frame" title="Aperçu" allowtransparency="true"></iframe></div>
-        <div class="game">
-          <h3>Top 10<small>Les meilleurs buteurs de l'histoire de la Ligue des champions</small></h3>
-          <div class="row ok"><i>1</i><b>Cristiano Ronaldo</b></div>
-          <div class="row ok"><i>2</i><b>Lionel Messi</b></div>
-          <div class="row"><i>3</i><b>••••••••••</b></div>
-          <div class="row ok"><i>4</i><b>Robert Lewandowski</b></div>
-          <div class="row"><i>5</i><b>••••••••</b></div>
-          <div class="row"><i>6</i><b>•••••••••</b></div>
-          <div class="row ok"><i>7</i><b>Karim Benzema</b></div>
-          <div class="row"><i>8</i><b>•••••••</b></div>
-          <div class="row"><i>9</i><b>••••••••••</b></div>
-          <div class="row"><i>10</i><b>••••••</b></div>
-        </div>
-      </div>
-      <p class="tip" style="margin:0;text-align:center">L'aperçu revient au bout de 2 s pour que tu voies l'animation ; le lien copié garde ta vraie pause.</p>
+  <div class="field">
+    <div class="lbl">Style</div>
+    <div class="styles" data-k="style">
+      <button data-v="score"><span class="ic">⚽</span><span><b>Tableau de score</b><small>Tu mènes 2-0, le chat doit égaliser</small></span></button>
+      <button data-v="var"><span class="ic">📺</span><span><b>VAR</b><small>Verdict : tu t'entraînes sur GoalXO</small></span></button>
+      <button data-v="chat"><span class="ic">💬</span><span><b>Tchat</b><small>« c'est quoi ce jeu ??? » et ta réponse</small></span></button>
     </div>
   </div>
 
-  <div class="link">
-    <input id="url" readonly aria-label="Lien de l'overlay">
-    <button class="btn primary" id="copy">Copier le lien</button>
-    <a class="btn ghost" id="open" target="_blank" rel="noopener">Ouvrir</a>
+  <div class="field">
+    <label class="lbl" for="name">Ton pseudo</label>
+    <input type="text" id="name" maxlength="16" placeholder="Streamer" autocomplete="off">
   </div>
-  <p class="tip">Dans TikTok Live Studio : <b>Ajouter une source › Lien</b>, colle le lien, donne-lui la taille indiquée, puis glisse-la entre ta webcam et le jeu.</p>
-</div>
+
+  <div class="field two">
+    <div><div class="lbl">Fond</div><div class="seg" data-k="theme"><button data-v="dark">Noir</button><button data-v="light">Blanc</button></div></div>
+    <div><div class="lbl">Langue</div><div class="seg" data-k="lang"><button data-v="fr">FR</button><button data-v="en">EN</button><button data-v="es">ES</button></div></div>
+  </div>
+
+  <div class="field two">
+    <div><label class="lbl" for="show">Affiché <span class="val" id="show-v"></span></label><input type="range" id="show" min="8" max="40" step="1"></div>
+    <div><label class="lbl" for="hide">Caché <span class="val" id="hide-v"></span></label><input type="range" id="hide" min="5" max="180" step="5"></div>
+  </div>
+
+  <div class="preview" id="preview">
+    <div class="screen">
+      <button class="replay" id="replay">↻ Rejouer</button>
+      <div class="cam">
+        <span class="live">LIVE</span>
+        <svg viewBox="0 0 200 170" aria-hidden="true"><circle cx="100" cy="62" r="40" fill="#7d6a86"/><path d="M20 170c4-46 38-72 80-72s76 26 80 72z" fill="#5e4f66"/></svg>
+      </div>
+      <div class="ovl"><iframe id="frame" title="Aperçu" allowtransparency="true"></iframe></div>
+      <div class="game">
+        <h3>Top 10<small>Les meilleurs buteurs de l'histoire de la Ligue des champions</small></h3>
+        <div class="row ok"><i>1</i><b>Cristiano Ronaldo</b></div>
+        <div class="row ok"><i>2</i><b>Lionel Messi</b></div>
+        <div class="row"><i>3</i><b>••••••••••</b></div>
+        <div class="row ok"><i>4</i><b>Robert Lewandowski</b></div>
+        <div class="row"><i>5</i><b>••••••••</b></div>
+        <div class="row"><i>6</i><b>•••••••••</b></div>
+        <div class="row ok"><i>7</i><b>Karim Benzema</b></div>
+        <div class="row"><i>8</i><b>•••••••</b></div>
+        <div class="row"><i>9</i><b>••••••••••</b></div>
+        <div class="row"><i>10</i><b>••••••</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field linkfield">
+    <div class="lbl">Lien de la source</div>
+    <div class="link">
+      <input type="text" id="url" readonly aria-label="Lien de l'overlay">
+      <button class="btn primary" id="copy">Copier le lien</button>
+    </div>
+    <p class="tip">TikTok Live Studio : <b>Ajouter une source › Lien</b>, taille <b>1000 × 180</b> (ou ce rapport), sous ta webcam.</p>
+  </div>
+</div></div>
+
 <script>
-const DEF = { style: 'band', theme: 'dark', lang: 'fr', show: 15, hide: 30, cta: '1' }
-// Each style's drawing size (same as the overlay): the source should have this ratio.
-const SIZES = { band: [1080, 150], compact: [820, 120], logos: [760, 120], flash: [860, 150], ticker: [1080, 130], punch: [1000, 150] }
+const DEF = { style: 'score', theme: 'dark', lang: 'fr', show: 15, hide: 30, name: '' }
 let st = { ...DEF }
-try { Object.assign(st, JSON.parse(localStorage.getItem('goalxo-overlay') || '{}')) } catch {}
+try { Object.assign(st, JSON.parse(localStorage.getItem('goalxo-overlay-2') || '{}')) } catch {}
 for (const k of Object.keys(st)) if (!(k in DEF)) delete st[k]
-if (!SIZES[st.style]) st.style = DEF.style
+if (!['score', 'var', 'chat'].includes(st.style)) st.style = DEF.style
 const base = new URL('./', location.href).href
 const $ = (id) => document.getElementById(id)
 
@@ -166,23 +167,19 @@ const render = (again = true) => {
   document.querySelectorAll('[data-k]').forEach((g) => g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === st[g.dataset.k])))
   $('show').value = st.show; $('show-v').textContent = st.show + ' s'
   $('hide').value = st.hide; $('hide-v').textContent = st.hide + ' s'
-  $('cta').checked = st.cta === '1'
-  $('cta').closest('.field').style.opacity = ['band', 'flash'].includes(st.style) ? 1 : .4
-  const [w, h] = SIZES[st.style]
-  $('dims').textContent = `${w} × ${h} px`
-  $('ovl').style.aspectRatio = `${w} / ${h}`
-  $('url').value = link(false); $('open').href = link(false)
-  try { localStorage.setItem('goalxo-overlay', JSON.stringify(st)) } catch {}
-  if (again) { clearTimeout(timer); timer = setTimeout(reload, 150) }
+  if (document.activeElement !== $('name')) $('name').value = st.name
+  $('url').value = link(false)
+  try { localStorage.setItem('goalxo-overlay-2', JSON.stringify(st)) } catch {}
+  if (again) { clearTimeout(timer); timer = setTimeout(reload, 250) }
 }
 document.querySelectorAll('[data-k]').forEach((g) => g.addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return
   st[g.dataset.k] = b.dataset.v; render()
 }))
+$('name').addEventListener('input', (e) => { st.name = e.target.value.trim(); render() })
 $('show').addEventListener('input', (e) => { st.show = +e.target.value; render(false) })
 $('show').addEventListener('change', () => render())
 $('hide').addEventListener('input', (e) => { st.hide = +e.target.value; render(false) })
-$('cta').addEventListener('change', (e) => { st.cta = e.target.checked ? '1' : '0'; render() })
 $('replay').addEventListener('click', reload)
 $('copy').addEventListener('click', async () => {
   const b = $('copy')
